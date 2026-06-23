@@ -1,22 +1,32 @@
-from pydantic_settings import BaseSettings
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    API_HOST: str
-    API_PORT: int
+    DATABASE_URL: str = "sqlite:///./data/notas.db"
 
-    JWT_SECRET: str
+    OLLAMA_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "llama3"
+    EMBEDDING_MODEL: str = "nomic-embed-text"
 
-    OLLAMA_BASE_URL: str
-
-    QDRANT_URL: str
+    QDRANT_URL: str = "http://localhost:6333"
     QDRANT_API_KEY: str = ""
+    QDRANT_COLLECTION: str = "notas"
 
-    COLLECTION_NAME: str
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+    )
 
-    class Config:
-        env_file = ".env"
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
 
 
-settings = Settings()
+settings = get_settings()

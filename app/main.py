@@ -1,17 +1,22 @@
 from fastapi import FastAPI
 
-from app.api.routes import router
-
-from app.core.database import engine
-
-from app.db.base import Base
-
+from app.core.database import Base, engine
+from app.models import Nota, Usuario
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="RAG de Notas",
-    version="1.0.0"
+    version="1.0.0",
+    description="API para gerenciamento de notas e consultas RAG utilizando LangChain e Ollama local.",
 )
 
-app.include_router(router)
+
+@app.get("/")
+def home():
+    return {
+        "projeto": "RAG de Notas",
+        "status": "online",
+        "versao": "1.0.0",
+        "ollama": "local",
+    }

@@ -1,34 +1,18 @@
-# Ambiente virtual
-.venv/
-
-# Python
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
 
-# Banco
-*.db
+.venv/
+venv/
 
-# Variáveis
 .env
 
-# VSCode
+data/*.db
+
+.idea/
 .vscode/
 
-# JetBrains
-.idea/
-
-# Chainlit
-.chainlit/
-
-# Logs
-*.log
-
-# Cache
 .pytest_cache/
-.mypy_cache/
 
-# Sistema
-.DS_Store
-Thumbs.db
+chainlit/.files
+
+*.log

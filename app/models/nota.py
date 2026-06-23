@@ -1,21 +1,15 @@
-from sqlalchemy import ForeignKey
-from sqlalchemy import Text
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
+from sqlalchemy import ForeignKey, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 
 
 class Nota(Base):
-
     __tablename__ = "notas"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    titulo: Mapped[str] = mapped_column(nullable=False)
+    conteudo: Mapped[str] = mapped_column(Text, nullable=False)
+    usuario_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"), nullable=False)
 
-    titulo: Mapped[str]
-
-    conteudo: Mapped[str] = mapped_column(Text)
-
-    usuario_id: Mapped[int] = mapped_column(
-        ForeignKey("usuarios.id")
-    )
+    usuario = relationship("Usuario", back_populates="notas")
