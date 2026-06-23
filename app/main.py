@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from app.api import auth, notas, usuarios
 from app.core.database import Base, engine
 from app.models import Nota, Usuario
 
@@ -20,3 +21,8 @@ def home():
         "versao": "1.0.0",
         "ollama": "local",
     }
+
+
+app.include_router(auth.router)
+app.include_router(usuarios.router)
+app.include_router(notas.router)
