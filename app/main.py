@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api import auth, notas, usuarios
+from app.api import auth, chat, notas, usuarios
 from app.core.database import Base, engine
 from app.models import Nota, Usuario
 
@@ -26,3 +26,4 @@ def home():
 app.include_router(auth.router)
 app.include_router(usuarios.router)
 app.include_router(notas.router)
+app.include_router(chat.router)
