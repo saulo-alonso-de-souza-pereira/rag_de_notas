@@ -11,3 +11,14 @@ def get_vector_store() -> QdrantVectorStore:
         url=settings.QDRANT_URL,
         api_key=settings.QDRANT_API_KEY or None,
     )
+
+
+def create_vector_store_from_documents(documents) -> QdrantVectorStore:
+    return QdrantVectorStore.from_documents(
+        documents=documents,
+        embedding=get_embeddings(),
+        collection_name=settings.QDRANT_COLLECTION,
+        url=settings.QDRANT_URL,
+        api_key=settings.QDRANT_API_KEY or None,
+        force_recreate=False,
+    )
