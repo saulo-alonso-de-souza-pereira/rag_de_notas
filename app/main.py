@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from app.api import auth, chat, embeddings, indexer, notas, qdrant, usuarios
 from app.core.database import Base, engine
 from app.models import Nota, Usuario
+from app.api import auth, chat, embeddings, indexer, notas, qdrant, retriever, usuarios
 
 Base.metadata.create_all(bind=engine)
 
@@ -30,3 +31,4 @@ app.include_router(chat.router)
 app.include_router(embeddings.router)
 app.include_router(qdrant.router)
 app.include_router(indexer.router)
+app.include_router(retriever.router)
