@@ -1,7 +1,7 @@
 from langchain_qdrant import QdrantVectorStore
 
 from app.core.config import settings
-from app.services.embeddings import get_embeddings
+from app.rag.embeddings import get_embeddings
 
 
 def get_vector_store() -> QdrantVectorStore:

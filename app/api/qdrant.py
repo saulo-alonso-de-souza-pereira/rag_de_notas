@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.services.qdrant import get_vector_store
+from app.rag.vector_store import get_vector_store
 
 
 router = APIRouter(

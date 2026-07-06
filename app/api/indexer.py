@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_usuario_atual
 from app.models.usuario import Usuario
-from app.services.indexer import indexar_notas_usuario
+from app.rag.indexer import indexar_notas_usuario
 
 
 router = APIRouter(

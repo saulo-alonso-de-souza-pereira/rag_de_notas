@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.services.embeddings import get_embeddings
+from app.rag.embeddings import get_embeddings
 
 
 router = APIRouter(

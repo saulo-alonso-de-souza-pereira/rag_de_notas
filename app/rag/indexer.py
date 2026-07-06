@@ -2,7 +2,7 @@ from langchain_core.documents import Document
 from sqlalchemy.orm import Session
 
 from app.models.nota import Nota
-from app.services.qdrant import create_vector_store_from_documents
+from app.rag.vector_store import create_vector_store_from_documents
 
 
 def indexar_notas_usuario(db: Session, usuario_id: int) -> int:
