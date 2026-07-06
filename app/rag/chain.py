@@ -6,17 +6,10 @@ from app.services.ollama import get_llm
 
 
 def formatar_contexto(documentos: list[Document]) -> str:
-    partes = []
-
-    for doc in documentos:
-        nota_id = doc.metadata.get("nota_id")
-        titulo = doc.metadata.get("titulo", "Sem título")
-
-        partes.append(
-            f"[Nota {nota_id} - {titulo}]\n{doc.page_content}"
-        )
-
-    return "\n\n".join(partes)
+    return "\n\n".join(
+        f"[Nota {doc.metadata.get('nota_id')} - {doc.metadata.get('titulo', 'Sem título')}]\n{doc.page_content}"
+        for doc in documentos
+    )
 
 
 def montar_fontes(documentos: list[Document]) -> list[dict]:
@@ -45,13 +38,11 @@ async def responder_pergunta_com_rag(
             "fontes": [],
         }
 
-    contexto = formatar_contexto(documentos)
-
     chain = RAG_PROMPT | get_llm()
 
     resposta = await chain.ainvoke(
         {
-            "context": contexto,
+            "context": formatar_contexto(documentos),
             "question": pergunta,
         }
     )
