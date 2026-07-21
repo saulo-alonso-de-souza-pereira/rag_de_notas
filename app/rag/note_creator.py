@@ -8,25 +8,28 @@ from app.services.ollama import get_llm
 
 
 CRIAR_NOTA_PROMPT = """
-Extraia da mensagem do usuário os dados para criar uma nota.
+Extraia da mensagem do usuário os dados necessários para criar uma nota.
 
-Responda APENAS em JSON válido, sem markdown.
+Responda APENAS com JSON válido, sem markdown ou explicações.
 
-Formato:
+Quando houver uma solicitação para criar uma nota, use:
+
 {{
   "deve_criar": true,
   "titulo": "título da nota",
   "conteudo": "conteúdo da nota"
 }}
 
-Se a mensagem não pedir criação de nota, responda:
+Quando não houver uma solicitação para criar uma nota, use:
+
 {{
   "deve_criar": false,
   "titulo": null,
   "conteudo": null
 }}
 
-Mensagem:
+Mensagem do usuário:
+
 {mensagem}
 """
 
@@ -77,6 +80,7 @@ async def tentar_criar_nota_por_linguagem_natural(
             {
                 "nota_id": nota.id,
                 "titulo": nota.titulo,
+                "conteudo": nota.conteudo,
                 "usuario_id": nota.usuario_id,
             }
         ],
