@@ -1,9 +1,10 @@
 import json
 
 from sqlalchemy.orm import Session
+from app.rag.router import limpar_resposta_json
 
 from app.models.nota import Nota
-from app.rag.indexer import indexar_notas_usuario
+from app.rag.indexer import indexar_nota
 from app.services.ollama import get_llm
 
 
@@ -42,12 +43,16 @@ async def tentar_criar_nota_por_linguagem_natural(
     llm = get_llm()
 
     resposta = await llm.ainvoke(
-        CRIAR_NOTA_PROMPT.format(mensagem=mensagem)
+        CRIAR_NOTA_PROMPT.format(
+            mensagem=mensagem,
+        )
     )
 
     try:
-        dados = json.loads(resposta.content)
-    except json.JSONDecodeError:
+        dados = json.loads(
+            limpar_resposta_json(resposta.content)
+        )
+    except (json.JSONDecodeError, TypeError):
         return None
 
     if not dados.get("deve_criar"):
@@ -58,21 +63,30 @@ async def tentar_criar_nota_por_linguagem_natural(
 
     if not titulo or not conteudo:
         return {
-            "resposta": "Para criar uma nota, informe título e conteúdo.",
+            "resposta": (
+                "Para criar uma nota, informe o título "
+                "e o conteúdo."
+            ),
             "fontes": [],
         }
 
     nota = Nota(
-        titulo=titulo,
-        conteudo=conteudo,
+        titulo=titulo.strip(),
+        conteudo=conteudo.strip(),
         usuario_id=usuario_id,
     )
 
     db.add(nota)
-    db.commit()
-    db.refresh(nota)
 
-    indexar_notas_usuario(db=db, usuario_id=usuario_id)
+    try:
+        db.commit()
+        db.refresh(nota)
+
+        vector_id = await indexar_nota(nota)
+
+    except Exception:
+        db.rollback()
+        raise
 
     return {
         "resposta": f"Nota criada com sucesso: {nota.titulo}",
@@ -80,8 +94,8 @@ async def tentar_criar_nota_por_linguagem_natural(
             {
                 "nota_id": nota.id,
                 "titulo": nota.titulo,
-                "conteudo": nota.conteudo,
                 "usuario_id": nota.usuario_id,
+                # "vector_id": vector_id,
             }
         ],
     }
