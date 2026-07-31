@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class NotaCreate(BaseModel):
@@ -12,6 +12,16 @@ class NotaResponse(BaseModel):
     conteudo: str
     usuario_id: int
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = ConfigDict(from_attributes=True)
+
+class NotaAtualizar(BaseModel):
+    titulo: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=200,
+    )
+    conteudo: str | None = Field(
+        default=None,
+        min_length=1,
+    )
+

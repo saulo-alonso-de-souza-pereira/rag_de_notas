@@ -81,3 +81,20 @@ async def indexar_notas_usuario(
     )
 
     return len(documentos)
+
+async def excluir_nota_indexada(
+    usuario_id: int,
+    nota_id: int,
+) -> bool:
+    vector_store = get_vector_store()
+
+    vector_id = gerar_id_vetorial(
+        usuario_id=usuario_id,
+        nota_id=nota_id,
+    )
+
+    resultado = await vector_store.adelete(
+        ids=[vector_id],
+    )
+
+    return bool(resultado)
