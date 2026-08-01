@@ -10,24 +10,24 @@ router = APIRouter(
     tags=["retriever"],
 )
 
-
 @router.get("/buscar")
 async def buscar(
     pergunta: str,
     usuario_atual: Usuario = Depends(get_usuario_atual),
 ):
-    documentos = await buscar_documentos_relevantes(
+    resultados = await buscar_documentos_relevantes(
         pergunta=pergunta,
         usuario_id=usuario_atual.id,
     )
 
     return {
-        "total": len(documentos),
+        "total": len(resultados),
         "documentos": [
             {
-                "conteudo": doc.page_content,
-                "metadata": doc.metadata,
+                "conteudo": resultado.documento.page_content,
+                "metadata": resultado.documento.metadata,
+                "score": round(resultado.score, 4),
             }
-            for doc in documentos
+            for resultado in resultados
         ],
     }

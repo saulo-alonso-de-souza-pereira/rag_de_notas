@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     QDRANT_API_KEY: str = ""
     QDRANT_COLLECTION: str = "notas"
 
+    RAG_TOP_K: int = 5
+    RAG_SCORE_THRESHOLD: float = 0.65
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

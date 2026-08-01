@@ -1,25 +1,45 @@
 from langchain_core.documents import Document
 
 from app.rag.prompt import RAG_PROMPT
-from app.rag.retriever import buscar_documentos_relevantes
+from app.rag.retriever import (
+    DocumentoRecuperado,
+    buscar_documentos_relevantes,
+)
 from app.services.ollama import get_llm
 
 
-def formatar_contexto(documentos: list[Document]) -> str:
-    return "\n\n".join(
-        f"[Nota {doc.metadata.get('nota_id')} - {doc.metadata.get('titulo', 'Sem título')}]\n{doc.page_content}"
-        for doc in documentos
-    )
+def formatar_contexto(
+    resultados: list[DocumentoRecuperado],
+) -> str:
+    partes = []
+
+    for resultado in resultados:
+        doc = resultado.documento
+
+        nota_id = doc.metadata.get("nota_id")
+        titulo = doc.metadata.get("titulo", "Sem título")
+
+        partes.append(
+            f"[Nota {nota_id} - {titulo}]\n"
+            f"{doc.page_content}"
+        )
+
+    return "\n\n".join(partes)
 
 
-def montar_fontes(documentos: list[Document]) -> list[dict]:
+def montar_fontes(
+    resultados: list[DocumentoRecuperado],
+) -> list[dict]:
     return [
         {
-            "nota_id": doc.metadata.get("nota_id"),
-            "titulo": doc.metadata.get("titulo"),
-            "usuario_id": doc.metadata.get("usuario_id"),
+            "nota_id": resultado.documento.metadata.get("nota_id"),
+            "titulo": resultado.documento.metadata.get("titulo"),
+            "usuario_id": resultado.documento.metadata.get(
+                "usuario_id"
+            ),
+            "score": round(resultado.score, 4),
         }
-        for doc in documentos
+        for resultado in resultados
     ]
 
 
@@ -27,14 +47,17 @@ async def responder_pergunta_com_rag(
     pergunta: str,
     usuario_id: int,
 ) -> dict:
-    documentos = await buscar_documentos_relevantes(
+    resultados = await buscar_documentos_relevantes(
         pergunta=pergunta,
         usuario_id=usuario_id,
     )
 
-    if not documentos:
+    if not resultados:
         return {
-            "resposta": "Não encontrei essa informação nas suas notas.",
+            "resposta": (
+                "Não encontrei informações suficientemente "
+                "relevantes nas suas notas."
+            ),
             "fontes": [],
         }
 
@@ -42,12 +65,12 @@ async def responder_pergunta_com_rag(
 
     resposta = await chain.ainvoke(
         {
-            "context": formatar_contexto(documentos),
+            "context": formatar_contexto(resultados),
             "question": pergunta,
         }
     )
 
     return {
         "resposta": resposta.content,
-        "fontes": montar_fontes(documentos),
+        "fontes": montar_fontes(resultados),
     }
