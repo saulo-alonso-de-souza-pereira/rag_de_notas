@@ -8,6 +8,9 @@ from app.rag.retriever import (
 from app.services.ollama import get_llm
 
 
+def criar_chain_rag():
+    return RAG_PROMPT | get_llm()
+
 def formatar_contexto(
     resultados: list[DocumentoRecuperado],
 ) -> str:
@@ -61,7 +64,7 @@ async def responder_pergunta_com_rag(
             "fontes": [],
         }
 
-    chain = RAG_PROMPT | get_llm()
+    chain = criar_chain_rag()
 
     resposta = await chain.ainvoke(
         {

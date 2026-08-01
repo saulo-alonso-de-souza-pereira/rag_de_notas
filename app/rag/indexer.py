@@ -20,7 +20,10 @@ def gerar_id_vetorial(usuario_id: int, nota_id: int) -> str:
 
 def converter_nota_em_documento(nota: Nota) -> Document:
     return Document(
-        page_content=nota.conteudo,
+        page_content=(
+            f"Título: {nota.titulo}\n"
+            f"Conteúdo: {nota.conteudo}"
+        ),
         metadata={
             "nota_id": nota.id,
             "usuario_id": nota.usuario_id,

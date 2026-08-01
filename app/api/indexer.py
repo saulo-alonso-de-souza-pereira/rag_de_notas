@@ -13,11 +13,11 @@ router = APIRouter(
 
 
 @router.post("/notas")
-def indexar_minhas_notas(
+async def indexar_minhas_notas(
     db: Session = Depends(get_db),
     usuario_atual: Usuario = Depends(get_usuario_atual),
 ):
-    total = indexar_notas_usuario(
+    total = await indexar_notas_usuario(
         db=db,
         usuario_id=usuario_atual.id,
     )
