@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    DATABASE_URL: str = "sqlite:///./data/notas.db"
+    APP_DATABASE_URL: str = "sqlite:///./data/notas.db"
 
     OLLAMA_URL: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "llama3"
@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
     )
 
 
